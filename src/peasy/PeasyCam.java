@@ -36,6 +36,11 @@ public class PeasyCam
 {
 	private static final Vector3D LOOK = Vector3D.plusK;
 	private static final Vector3D UP = Vector3D.plusJ;
+	
+	public static final int MILLISECONDS = 1;
+	public static final int FRAMESS = 2;
+	// FIXME This may not be so nice, but it's way too hard for me, to make this an instance variable.
+  private static int timer = MILLISECONDS;		
 
 	private static enum Constraint
 	{
@@ -66,6 +71,15 @@ public class PeasyCam
 	private final InterpolationManager distanceInterps = new InterpolationManager();
 
 	public final String VERSION = "0.4.1";
+
+  public static int getTimer() {
+    return PeasyCam.timer;
+  }
+  
+  public static int setTimer(int timer) {
+    PeasyCam.timer = timer;
+    return PeasyCam.timer;
+  }
 
 	public PeasyCam(final PApplet parent, final double distance)
 	{
@@ -431,16 +445,22 @@ public class PeasyCam
 	abstract public class AbstractInterp
 	{
 		double startTime;
-		final double timeInMillis;
+		int startFrame;
+		final double time;
 
-		protected AbstractInterp(final long timeInMillis)
-		{
-			this.timeInMillis = timeInMillis;
+		protected AbstractInterp(final long time)
+		{		
+			this.time = time;
 		}
 
 		void start()
-		{
-			startTime = p.millis();
+		{		  
+		  if(PeasyCam.timer == PeasyCam.FRAMES) {		    
+			  startTime = p.frameCount+1;
+		  } else {
+		    startTime =  p.millis();
+		  }
+			
 			p.registerDraw(this);
 		}
 
@@ -450,8 +470,16 @@ public class PeasyCam
 		}
 
 		public void draw()
-		{
-			final double t = (p.millis() - startTime) / timeInMillis;
+		{		  
+		  double now;
+		  if(PeasyCam.timer == PeasyCam.FRAMES) {		    
+		    now = p.frameCount;
+		  } else {
+		    now = p.millis();
+		  }
+		  
+		  final double t = (now - startTime) / time;
+			
 			if (t > .99)
 			{
 				cancel();
@@ -463,7 +491,7 @@ public class PeasyCam
 			}
 			feed();
 		}
-
+    
 		protected abstract void interp(double t);
 
 		protected abstract void setEndState();
