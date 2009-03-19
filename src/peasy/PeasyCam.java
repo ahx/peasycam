@@ -38,7 +38,7 @@ public class PeasyCam
 	private static final Vector3D UP = Vector3D.plusJ;
 	
 	public static final int MILLISECONDS = 1;
-	public static final int FRAMESS = 2;
+	public static final int FRAMES = 2;
 	// FIXME This may not be so nice, but it's way too hard for me, to make this an instance variable.
   private static int timer = MILLISECONDS;		
 
@@ -378,7 +378,7 @@ public class PeasyCam
 
 	public void setState(final CameraState state)
 	{
-		setState(state, 300);
+		setState(state, 0);
 	}
 
 	public void setState(final CameraState state, final long animationTimeMillis)
